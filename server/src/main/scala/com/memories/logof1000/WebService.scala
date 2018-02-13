@@ -2,6 +2,7 @@ package com.memories.logof1000
 
 import akka.http.scaladsl.server.Directives
 import com.memories.logof1000.shared.SharedMessages
+import com.memories.logof1000.shared.cms.page.Page
 import com.memories.logof1000.twirl.Implicits._
 
 class WebService() extends Directives {
@@ -14,12 +15,19 @@ class WebService() extends Directives {
         }
       }
     } ~
-      pathPrefix("assets" / Remaining) { file =>
-        // optionally compresses the response with Gzip or Deflate
-        // if the client accepts compressed responses
-        encodeResponse {
-          getFromResource("public/" + file)
-        }
+    pathPrefix("assets" / Remaining) { file =>
+      // optionally compresses the response with Gzip or Deflate
+      // if the client accepts compressed responses
+      encodeResponse {
+        getFromResource("public/" + file)
       }
+    } ~
+    post{
+			path("addPage"){
+				entity(as[Page]){
+					e ⇒ complete(upickle.default.write(Page(e.title + "fromserver")))
+				}
+			}
+		}
   }
 }
