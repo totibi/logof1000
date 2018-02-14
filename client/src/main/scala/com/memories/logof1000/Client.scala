@@ -29,7 +29,8 @@ object Ajaxer extends autowire.Client[String, upickle.default.Reader, upickle.de
 object Client {
 
 	@JSExport
-  def main(args: Array[String]): Unit = {
+  def main(): Unit = {
+		println("kek")
     dom.document.body.appendChild(
       button(
 				*.onclick := { (event: dom.Event) ⇒
@@ -44,6 +45,7 @@ object Client {
   }
 
   def renderPage(pageToRender: Page): Unit = {
+		println("kek2")
     dom.document.body.appendChild(
       div(
         p(pageToRender.title)

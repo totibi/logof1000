@@ -7,15 +7,11 @@ lazy val server = (project in file("server")).settings(commonSettings).settings(
     "com.typesafe.akka" %% "akka-http" % "10.0.10",
     "com.vmunier" %% "scalajs-scripts" % "1.1.0"
   ),
-  WebKeys.packagePrefix in Assets := "public/",
   managedClasspath in Runtime += (packageBin in Assets).value,
-  // Compile the project before generating Eclipse files, so that generated .scala or .class files for Twirl templates are present
-  EclipseKeys.preTasks := Seq(compile in Compile)
-).enablePlugins(SbtWeb, SbtTwirl, JavaAppPackaging).
+).enablePlugins(SbtWeb, JavaAppPackaging).
   dependsOn(sharedJvm)
 
 lazy val client = (project in file("client")).settings(commonSettings).settings(
-  scalaJSUseMainModuleInitializer := true,
   libraryDependencies ++= Seq(
     "org.scala-js" %%% "scalajs-dom" % "0.9.3"
   )
@@ -23,8 +19,8 @@ lazy val client = (project in file("client")).settings(commonSettings).settings(
   dependsOn(sharedJs)
 
 lazy val shared = (crossProject.crossType(CrossType.Pure) in file("shared")).settings(commonSettings)
-lazy val sharedJvm = shared.jvm
 lazy val sharedJs = shared.js
+lazy val sharedJvm = shared.jvm
 
 lazy val commonSettings = Seq(
 	scalaVersion := "2.12.2",

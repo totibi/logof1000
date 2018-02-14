@@ -2,11 +2,11 @@ package com.memories.logof1000
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
+import akka.http.scaladsl.model.{ContentTypes, HttpEntity}
 import akka.http.scaladsl.server.Directives
 import akka.stream.ActorMaterializer
-import com.memories.logof1000.shared.SharedMessages
 import com.memories.logof1000.shared.cms.page.{Page, PageApi}
-import com.memories.logof1000.twirl.Implicits._
+import com.memories.logof1000.view.MainSkeleton
 import com.typesafe.config.ConfigFactory
 import upickle.default
 
@@ -41,20 +41,17 @@ object Server extends Directives with PageApi{
 	}
 
 	val route = {
-    pathSingleSlash {
-      get {
-        complete {
-          com.memories.logof1000.html.index.render(SharedMessages.itWorks)
-        }
-      }
-    } ~
-    pathPrefix("assets" / Remaining) { file =>
-      // optionally compresses the response with Gzip or Deflate
-      // if the client accepts compressed responses
-      encodeResponse {
-        getFromResource("public/" + file)
-      }
-    } ~
+   get{
+		 pathSingleSlash{
+			complete{
+				HttpEntity(
+					ContentTypes.`text/html(UTF-8)`,
+					MainSkeleton.skeleton
+				)
+			}
+		 } ~
+		 getFromResourceDirectory("")
+	 } ~
     post{
 			path("ajax" / Segments){
 				segment ⇒
