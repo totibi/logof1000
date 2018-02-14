@@ -31,7 +31,8 @@ lazy val commonSettings = Seq(
 	organization := "com.memories",
 	libraryDependencies ++= Seq(
 		"com.lihaoyi" %%% "scalatags" % "0.6.2",
-		"com.lihaoyi" %%% "upickle" % "0.5.1"
+		"com.lihaoyi" %%% "upickle" % "0.5.1",
+		"com.lihaoyi" %%% "autowire" % "0.2.6"
 	)
 )
 
