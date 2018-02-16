@@ -5,6 +5,7 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.{ContentTypes, HttpEntity}
 import akka.http.scaladsl.server.Directives
 import akka.stream.ActorMaterializer
+import com.memories.logof1000.cms.{PageContainer, PageContainerInMemory}
 import com.memories.logof1000.shared.cms.page.{Page, PageApi}
 import com.memories.logof1000.view.MainSkeleton
 import com.typesafe.config.ConfigFactory
@@ -34,10 +35,12 @@ object Server extends Directives with PageApi{
 		println(s"Server online at http://$interface:$port")
 	}
 
+	val pageContainer: PageContainer = PageContainerInMemory
 
-	override def getPage(kek: String): Page = {
-		println(kek)
-		Page(kek)
+	override def addPage(title: String): Page = {
+		val newPage = Page(title)
+		pageContainer.addPage(newPage)
+		newPage
 	}
 
 	val route = {

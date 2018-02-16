@@ -10,6 +10,8 @@ import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 import scala.scalajs.js.annotation.JSExport
 import scalatags.JsDom.short._
 
+// TODO форму с текстом для отправки на сервак
+
 object Ajaxer extends autowire.Client[String, upickle.default.Reader, upickle.default.Writer]{
 	override def doCall(req: Request): Future[String] = {
 		dom.ext.Ajax.post(
@@ -31,16 +33,28 @@ object Client {
 	@JSExport
   def main(): Unit = {
 		println("kek")
-    dom.document.body.appendChild(
-      button(
+		val pageTitleInput = input.render
+		val addPageButton =
+			button(
 				*.onclick := { (event: dom.Event) ⇒
-					Ajaxer[PageApi].getPage("wtf??!").call()
+					Ajaxer[PageApi].addPage(pageTitleInput.value).call()
 						.foreach { page ⇒
 							renderPage(page)
 						}
 				},
-				p("kekme")
-      ).render
+				p("add page")
+			)
+		val pagesUL =
+			ul(
+
+			).render
+    dom.document.body.appendChild(
+			div(
+				pageTitleInput,
+				br,
+				addPageButton,
+				pagesUL
+			).render
     )
   }
 
