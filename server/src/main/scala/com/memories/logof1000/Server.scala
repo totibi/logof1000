@@ -19,7 +19,21 @@ object ServerRouter extends autowire.Server[String, upickle.default.Reader, upic
 	override def write[Result](r: Result)(implicit evidence$2: default.Writer[Result]): String = upickle.default.write(r)
 }
 
-object Server extends Directives with PageApi{
+trait PageApiImp extends PageApi{
+	val pageContainer: PageContainer = PageContainerInMemory
+
+	override def addPage(newPage: Page): Page = {
+		pageContainer.addPage(newPage)
+		newPage
+	}
+
+	override def getPages: Seq[Page] = {
+		pageContainer.getPages
+	}
+
+}
+
+object Server extends Directives with PageApiImp {
 
 	def main(args: Array[String]) {
 		implicit val system = ActorSystem("server-system")
@@ -33,14 +47,6 @@ object Server extends Directives with PageApi{
 		Http().bindAndHandle(route, interface, port)
 
 		println(s"Server online at http://$interface:$port")
-	}
-
-	val pageContainer: PageContainer = PageContainerInMemory
-
-	override def addPage(title: String): Page = {
-		val newPage = Page(title)
-		pageContainer.addPage(newPage)
-		newPage
 	}
 
 	val route = {

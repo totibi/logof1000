@@ -37,7 +37,7 @@ object Client {
 		val addPageButton =
 			button(
 				*.onclick := { (event: dom.Event) ⇒
-					Ajaxer[PageApi].addPage(pageTitleInput.value).call()
+					Ajaxer[PageApi].addPage(Page(pageTitleInput.value)).call()
 						.foreach { page ⇒
 							renderPage(page)
 						}
