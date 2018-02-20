@@ -8,6 +8,7 @@ import akka.stream.ActorMaterializer
 import com.typesafe.config.ConfigFactory
 import server.cms.{PageContainer, PageContainerInMemory}
 import server.view.MainSkeleton
+import shared.cms.message.Message
 import shared.cms.page.{Page, PageApi}
 import upickle.default
 
@@ -31,6 +32,10 @@ trait PageApiImp extends PageApi {
 		pageContainer.getPages
 	}
 
+	override def addMessageToPage(message: Message, page: Page): Boolean = {
+		page.messages.addMessage(message)
+		true
+	}
 }
 
 object Server extends Directives with PageApiImp {

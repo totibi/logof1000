@@ -30,9 +30,9 @@ object Ajaxer extends autowire.Client[String, upickle.default.Reader, upickle.de
 @JSExportTopLevel("Client")
 object Client {
 
-	val menuContainer = div(*.float := "left").render
+	val menuContainer: HTMLElement = div(*.float := "left").render
 	// Отоброжает содержимое выбранной страницы
-	val messagesContainer = div(*.float := "left").render
+	val messagesContainer: HTMLElement = div(*.float := "left").render
 
 	@JSExport
 	def main(): Unit = {
@@ -42,9 +42,6 @@ object Client {
 				"add page",
 				*.onclick := { (event: dom.Event) ⇒
 					Ajaxer[PageApi].addPage(Page(pageTitleInput.value)).call()
-						.foreach { page ⇒
-							renderPage(page)
-						}
 				}
 			)
 		val pagesElem = ul().render
@@ -74,14 +71,6 @@ object Client {
 		)
 	}
 
-	def renderPage(pageToRender: Page): Unit = {
-		dom.document.body.appendChild(
-			div(
-				p(pageToRender.title)
-			).render
-		)
-	}
-
 	@JSExport
 	def fillPagesUL(pagesElem: HTMLElement, pages: Seq[Page]): Unit = {
 		clearComponent(pagesElem)
@@ -93,7 +82,7 @@ object Client {
 							page.title,
 							*.onclick := { (event: dom.Event) ⇒ {
 								clearComponent(messagesContainer)
-								messagesContainer.appendChild(PageClient.page2Elemnent(page))
+								messagesContainer.appendChild(PageClient.page2Element(page))
 							}
 							}
 						)
