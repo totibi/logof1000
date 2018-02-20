@@ -1,10 +1,11 @@
-package com.memories.logof1000.view
+package server.view
+
 import scalatags.Text.all._
 import scalatags.Text.tags2.title
 
 object MainSkeleton {
 	val onLoadScript =
-		"com.memories.logof1000.Client().main()"
+		"Client.main()"
 	val skeleton =
 		"<!DOCTYPE html>" +
 		html(
@@ -15,11 +16,7 @@ object MainSkeleton {
 			),
 			body(
 				onload := onLoadScript,
-			ul(
-				for (file ← Option(new java.io.File(".").listFiles()).toSeq.flatten)
-					li(file.getName)
-			),
-			p("Hello")
+			"Hello"
 			)
 		).render
 

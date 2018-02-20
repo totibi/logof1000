@@ -1,6 +1,6 @@
-package com.memories.logof1000.cms
+package server.cms
 
-import com.memories.logof1000.shared.cms.page.Page
+import shared.cms.page.Page
 
 abstract class PageContainer {
 	def getPages: Seq[Page]
