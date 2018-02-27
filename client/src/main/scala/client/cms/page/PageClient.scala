@@ -27,22 +27,40 @@ object PageClient {
 			).render
 		div(
 			*.float := "left",
+			*.width := "100%",
+			*.height := "100%",
 			messageInput, addMessageButton
 		).render
 	}
 
-	val messageBlock: HTMLElement = div(*.float := "right").render
+	def messageBlock: HTMLElement = div(*.float := "right").render
 
 	def page2Element(page: Page): HTMLElement = {
 		clearComponent(messageBlock)
 		page.messages.getMessages.foreach(message ⇒ messageBlock.appendChild(p(message.content).render))
 		div(
-			script("tinymce.init({\n  " +
-						 "selector: '#tinyMCE',\n  " +
-						 "plugin: 'a_tinymce_plugin',\n  " +
-						 "a_plugin_option: true,\n  " +
-						 "a_configuration_option: 400\n" +
-						 "});"),
+			*.width := "1000px",
+			*.height := "700px",
+			script(
+				"""
+			 tinymce.init({
+					 selector: '#tinyMCE',
+					  plugins: [
+					 |    'advlist autolink lists link image charmap print preview anchor textcolor',
+					 |    'searchreplace visualblocks code fullscreen',
+					 |    'insertdatetime media table contextmenu paste code help wordcount'
+					 |  ],
+					 menubar: 'edit view',
+					 toolbar: 'paste fullscreen',
+					 paste_as_text: true,
+					 paste_data_images: true,
+					 content_css: [
+					 |    '//fonts.googleapis.com/css?family=Lato:300,300i,400,400i',
+					 |    '//www.tinymce.com/css/codepen.min.css'
+					 |    ]
+					 });
+				""".stripMargin
+			),
 			h1("Hello this is " + page.title),
 			addMessageButton(page),
 			messageBlock
