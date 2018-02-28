@@ -1,15 +1,11 @@
 package server
 
-import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.{ContentTypes, HttpEntity}
 import akka.http.scaladsl.server.Directives
-import akka.stream.ActorMaterializer
 import com.typesafe.config.ConfigFactory
-import server.cms.{PageContainer, PageContainerInMemory}
 import server.view.MainSkeleton
-import shared.cms.message.Message
-import shared.cms.page.{Page, PageApi}
+import shared.MainAPI
 import upickle.default
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -20,29 +16,9 @@ object ServerRouter extends autowire.Server[String, upickle.default.Reader, upic
 	override def write[Result](r: Result)(implicit evidence$2: default.Writer[Result]): String = upickle.default.write(r)
 }
 
-trait PageApiImp extends PageApi {
-	val pageContainer: PageContainer = PageContainerInMemory
-
-	override def addPage(newPage: Page): Page = {
-		pageContainer.addPage(newPage)
-		newPage
-	}
-
-	override def getPages(emptyDontWork: Boolean = true): Seq[Page] = {
-		pageContainer.getPages
-	}
-
-	override def addMessageToPage(message: Message, page: Page): Boolean = {
-		page.messages.addMessage(message)
-		true
-	}
-}
-
-object Server extends Directives with PageApiImp {
+object Server extends Directives with ServerController {
 
 	def main(args: Array[String]) {
-		implicit val system = ActorSystem("server-system")
-		implicit val materializer = ActorMaterializer()
 
 		val config = ConfigFactory.load()
 		val interface = config.getString("http.interface")
@@ -66,11 +42,11 @@ object Server extends Directives with PageApiImp {
 			}
 		} ~
 		getFromResourceDirectory("") ~
-		path("ajax" / Segments) { segment ⇒
+		path("api" / Segments) { segment ⇒
 			post {
 				 entity(as[String]) { entity ⇒
 						complete {
-							ServerRouter.route[PageApi](Server)(autowire.Core.Request(segment, upickle.default.read[Map[String, String]](entity)))
+							ServerRouter.route[MainAPI](Server)(autowire.Core.Request(segment, upickle.default.read[Map[String, String]](entity)))
 						}
 				}
 			}

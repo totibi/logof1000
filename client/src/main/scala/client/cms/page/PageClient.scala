@@ -3,8 +3,9 @@ package client.cms.page
 import autowire._
 import org.scalajs.dom
 import org.scalajs.dom.raw.HTMLElement
+import shared.MainAPI
 import shared.cms.message.Message
-import shared.cms.page.{Page, PageApi}
+import shared.cms.page.Page
 
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 import scalatags.JsDom.short._
@@ -17,7 +18,7 @@ object PageClient {
 				"new message",
 				*.onclick := { (event: dom.Event) ⇒
 					val newMessage = Message(messageInput.value)
-					client.Ajaxer[PageApi].addMessageToPage(newMessage, page).call().foreach { result ⇒
+					client.Ajaxer[MainAPI].addMessageToPage(newMessage, page).call().foreach { result ⇒
 						if (result) {
 							page.messages.addMessage(newMessage)
 							messageBlock.appendChild(p(newMessage.content).render)

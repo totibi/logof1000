@@ -2,9 +2,11 @@ package client
 
 import autowire._
 import client.cms.page.PageClient
+import client.rss.RssClient
 import org.scalajs.dom
 import org.scalajs.dom.raw.HTMLElement
-import shared.cms.page.{Page, PageApi}
+import shared.MainAPI
+import shared.cms.page.Page
 import upickle.default
 
 import scala.concurrent.Future
@@ -15,7 +17,7 @@ import scalatags.JsDom.short._
 object Ajaxer extends autowire.Client[String, upickle.default.Reader, upickle.default.Writer] {
 	override def doCall(req: Request): Future[String] = {
 		dom.ext.Ajax.post(
-			url = "/ajax/" + req.path.mkString("/"),
+			url = "/api/" + req.path.mkString("/"),
 			data = upickle.default.write(req.args)
 		).map(response ⇒ {
 			response.responseText
@@ -41,7 +43,7 @@ object Client {
 			button(
 				"add page",
 				*.onclick := { (event: dom.Event) ⇒
-					Ajaxer[PageApi].addPage(Page(pageTitleInput.value)).call()
+					Ajaxer[MainAPI].addPage(Page(pageTitleInput.value)).call()
 				}
 			)
 		val pagesElem = ul().render
@@ -49,7 +51,7 @@ object Client {
 			button(
 				"get pages",
 				*.onclick := { (event: dom.Event) ⇒
-					Ajaxer[PageApi].getPages().call().foreach {
+					Ajaxer[MainAPI].getPages().call().foreach {
 						pages ⇒ fillPagesUL(pagesElem, pages)
 					}
 				}
@@ -66,12 +68,12 @@ object Client {
 		dom.document.body.appendChild(
 			div(
 				menuContainer,
-				messagesContainer
+				messagesContainer,
+				RssClient.skeleton
 			).render
 		)
 	}
 
-	@JSExport
 	def fillPagesUL(pagesElem: HTMLElement, pages: Seq[Page]): Unit = {
 		clearComponent(pagesElem)
 		pagesElem.appendChild(
