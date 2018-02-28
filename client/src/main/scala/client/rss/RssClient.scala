@@ -10,13 +10,33 @@ import scalatags.JsDom.short._
 
 object RssClient {
 	def fetchFeedsButton: HTMLElement = {
+		val titlesBlock: HTMLElement = div(
+			*.float := "left",
+			"News"
+		).render
 		val urlInput = input.render
 		val addMessageButton =
 			button(
 				"get feeds",
 				*.onclick := { (event: dom.Event) ⇒
 					client.Ajaxer[MainAPI].fetchFeeds(urlInput.value).call().foreach { feeds ⇒
-							feeds.foreach(feed ⇒ titlesBlock.appendChild(p(feed.title).render))
+							feeds.foreach(feed ⇒ {
+								titlesBlock.appendChild(
+									div(
+										hr,
+										feed.title,
+										feed.items.map(feedItem ⇒ div (
+											a(
+												*.href := s"${feedItem.link}",
+												p(b({feedItem.title}))
+											),
+											span(feedItem.desc),
+											p(b(feedItem.date)),
+											hr
+										))
+									).render
+								)
+							})
 					}
 				}
 			).render
@@ -24,16 +44,13 @@ object RssClient {
 			*.float := "left",
 			*.width := "100%",
 			*.height := "100%",
-			urlInput, addMessageButton
+			urlInput, addMessageButton, titlesBlock
 		).render
 	}
 
-	def titlesBlock: HTMLElement = div(*.float := "right").render
-
 	def skeleton: HTMLElement = {
 		div(
-			fetchFeedsButton,
-			titlesBlock
+			fetchFeedsButton
 		).render
 	}
 }
