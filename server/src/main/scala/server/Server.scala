@@ -47,7 +47,13 @@ object Server extends Directives with ServerController {
 				}
 			}
 		} ~
-		getFromResourceDirectory("") ~
+		pathPrefix("assets" / Remaining) { file =>
+			// optionally compresses the response with Gzip or Deflate
+			// if the client accepts compressed responses
+			encodeResponse {
+				getFromResource("public/" + file)
+			}
+		} ~
 		path("api" / Segments) { segment ⇒
 			post {
 				entity(as[String]) { entity ⇒

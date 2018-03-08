@@ -48,11 +48,12 @@ object PageClient {
 					 selector: '#tinyMCE',
 					  plugins: [
 					 |    'advlist autolink lists link image charmap print preview anchor textcolor',
-					 |    'searchreplace visualblocks code fullscreen',
+					 |    'searchreplace visualblocks code fullscreen save directionality emoticons ',
 					 |    'insertdatetime media table contextmenu paste code help wordcount'
 					 |  ],
-					 menubar: 'edit view',
-					 toolbar: 'paste fullscreen',
+					 menubar: 'file edit insert view format table tools help',
+					 toolbar: 'fullscreen | insertfile undo redo | styleselect fontsizeselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | print preview media fullpage | forecolor backcolor emoticons',
+					 nowrap: true,
 					 paste_as_text: true,
 					 paste_data_images: true,
 					 content_css: [

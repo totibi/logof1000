@@ -12,8 +12,8 @@ object MainSkeleton {
 			head(
 				title("Log Of 1000"),
 				meta(httpEquiv:="Content-Type", content:="text/html; charset=UTF-8"),
-				script(`type`:="text/javascript", src:="/client-fastopt.js"), // позволяет использовать сгенерированные scala.js скрипты
-				script(`type`:="text/javascript", src:="https://cloud.tinymce.com/stable/tinymce.min.js")
+				script(`type`:="text/javascript", src:="/assets/client-fastopt.js"), // позволяет использовать сгенерированные scala.js скрипты
+				script(`type`:="text/javascript", src:="/assets/tinymce/tinymce.min.js")
 			),
 			body(
 				onload := onLoadScript,
