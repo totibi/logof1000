@@ -7,8 +7,9 @@ lazy val server = (project in file("server")).settings(commonSettings).settings(
     "com.typesafe.akka" %% "akka-http" % "10.0.10",
     "com.vmunier" %% "scalajs-scripts" % "1.1.0"
   ),
+	WebKeys.packagePrefix in Assets := "public/",
   managedClasspath in Runtime += (packageBin in Assets).value,
-).enablePlugins(SbtWeb, JavaAppPackaging).
+).enablePlugins(SbtWeb).
   dependsOn(sharedJvm)
 
 lazy val client = (project in file("client")).settings(commonSettings).settings(
