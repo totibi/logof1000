@@ -1,4 +1,4 @@
-package server.cms
+package cms.model
 
 import shared.cms.page.Page
 
@@ -7,6 +7,8 @@ abstract class PageContainer {
 	def addPage(pageToAdd: Page): Unit
 }
 
+
+// used for testing
 object PageContainerInMemory extends PageContainer{
 	private[this] var pagesInMemory: Seq[Page] = List(Page("Kek"), Page("New page1"), Page("New page2"))
 

@@ -6,6 +6,7 @@ import akka.http.scaladsl.model.{ContentTypes, HttpEntity}
 import akka.http.scaladsl.server.Directives
 import akka.stream.ActorMaterializer
 import com.typesafe.config.ConfigFactory
+import server.controller.ServerController
 import server.view.MainSkeleton
 import shared.MainAPI
 import upickle.default

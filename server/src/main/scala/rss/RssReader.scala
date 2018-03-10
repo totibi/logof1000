@@ -1,4 +1,4 @@
-package server.rss
+package rss
 
 import java.net.URL
 import java.text.SimpleDateFormat

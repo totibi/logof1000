@@ -1,9 +1,9 @@
-package server
+package server.controller
 
 import java.net.URL
 
-import server.cms.{PageContainer, PageContainerInMemory}
-import server.rss.RssReader
+import cms.model.{PageContainer, PageContainerInMemory}
+import rss.RssReader
 import shared.MainAPI
 import shared.cms.message.Message
 import shared.cms.page.Page
