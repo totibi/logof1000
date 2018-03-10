@@ -1,6 +1,7 @@
 package client.cms.page
 
 import autowire._
+import client.tinymce.tinymce
 import org.scalajs.dom
 import org.scalajs.dom.raw.HTMLElement
 import shared.MainAPI
@@ -11,41 +12,39 @@ import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 import scalatags.JsDom.short._
 
 object PageClient {
-	def addMessageButton(page: Page): HTMLElement = {
-		val messageInput = textarea(*.id := "tinyMCE").render
+	def addMessageButton(page: Page, messageBlock: HTMLElement): HTMLElement = {
+		val messageInput = textarea(*.id := "tinymce-textarea").render
 		val addMessageButton =
 			button(
 				"new message",
 				*.onclick := { (event: dom.Event) ⇒
+					tinymce.triggerSave() // needed in ajax submit otherwise input.value will be empty
 					val newMessage = Message(messageInput.value)
 					client.Ajaxer[MainAPI].addMessageToPage(newMessage, page).call().foreach { result ⇒
 						if (result) {
 							page.messages.addMessage(newMessage)
-							messageBlock.appendChild(p(newMessage.content).render)
+							messageBlock.innerHTML += newMessage.content
 						}
 					}
 				}
 			).render
 		div(
 			*.float := "left",
-			*.width := "100%",
-			*.height := "100%",
 			messageInput, addMessageButton
 		).render
 	}
 
-	def messageBlock: HTMLElement = div(*.float := "right").render
-
 	def page2Element(page: Page): HTMLElement = {
+		val messageBlock = div(*.float := "right").render
 		clearComponent(messageBlock)
-		page.messages.getMessages.foreach(message ⇒ messageBlock.appendChild(p(message.content).render))
+		page.messages.getMessages.foreach(message ⇒ messageBlock.innerHTML += message.content)
 		div(
-			*.width := "1000px",
-			*.height := "700px",
 			script(
+				// TODO вынести команду удаления редакторов в скала код (необходим всвязи с тем, что элементы появляются динамически, иногда через ajax)
 				"""
+			 tinymce.EditorManager.execCommand('mceRemoveEditor',true, 'tinymce-textarea');
 			 tinymce.init({
-					 selector: '#tinyMCE',
+					 selector: '#tinymce-textarea',
 					  plugins: [
 					 |    'advlist autolink lists link image charmap print preview anchor textcolor',
 					 |    'searchreplace visualblocks code fullscreen save directionality emoticons ',
@@ -64,7 +63,7 @@ object PageClient {
 				""".stripMargin
 			),
 			h1("Hello this is " + page.title),
-			addMessageButton(page),
+			addMessageButton(page, messageBlock),
 			messageBlock
 		).render
 	}
