@@ -5,7 +5,8 @@ lazy val server = (project in file("server")).settings(commonSettings).settings(
   compile in Compile := ((compile in Compile) dependsOn scalaJSPipeline).value,
   libraryDependencies ++= Seq(
     "com.typesafe.akka" %% "akka-http" % "10.0.10",
-    "com.vmunier" %% "scalajs-scripts" % "1.1.0"
+    "com.vmunier" %% "scalajs-scripts" % "1.1.0",
+		"org.mongodb.scala" %% "mongo-scala-driver" % "2.2.0"
   ),
 	WebKeys.packagePrefix in Assets := "public/",
   managedClasspath in Runtime += (packageBin in Assets).value,

@@ -43,7 +43,7 @@ object Client {
 			button(
 				"add page",
 				*.onclick := { (event: dom.Event) ⇒
-					Ajaxer[MainAPI].addPage(Page(pageTitleInput.value)).call()
+					Ajaxer[MainAPI].addPage(Page(pageTitleInput.value, Nil)).call()
 				}
 			)
 		val pagesElem = ul().render

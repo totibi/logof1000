@@ -1,20 +1,43 @@
 package cms.model
 
+import java.util.concurrent.TimeUnit
+
+import org.mongodb.scala.MongoCollection
+import server.model.ServerDBC
+import shared.cms.message.Message
 import shared.cms.page.Page
+
+import scala.concurrent.Await
+import scala.concurrent.duration.Duration
 
 abstract class PageContainer {
 	def getPages: Seq[Page]
+
 	def addPage(pageToAdd: Page): Unit
+
+	def updatePage(pageToUpdate: Page): Unit
 }
 
+object PageContainerInDB extends PageContainer {
 
-// used for testing
-object PageContainerInMemory extends PageContainer{
-	private[this] var pagesInMemory: Seq[Page] = List(Page("Kek"), Page("New page1"), Page("New page2"))
+	import org.bson.codecs.configuration.CodecRegistries.{fromProviders, fromRegistries}
+	import org.mongodb.scala.bson.codecs.DEFAULT_CODEC_REGISTRY
+	import org.mongodb.scala.bson.codecs.Macros._
 
-	override def getPages: Seq[Page] = pagesInMemory
+	import org.mongodb.scala.model.{Updates, Filters}
 
-	override def addPage(pageForAdd: Page): Unit = {
-		pagesInMemory = pagesInMemory :+ pageForAdd
-	}
+	private val pagesRegistry = fromRegistries(fromProviders(classOf[Page], classOf[Message]), DEFAULT_CODEC_REGISTRY)
+
+	val collectionName = "PagesCollection"
+	val pagesCollection: MongoCollection[Page] = ServerDBC.getDB(pagesRegistry).getCollection(collectionName)
+
+	override def getPages: Seq[Page] = Await.result(pagesCollection.find().toFuture(), Duration(10, TimeUnit.SECONDS))
+
+	override def addPage(pageToAdd: Page): Unit = Await.result(pagesCollection.insertOne(pageToAdd).toFuture(), Duration(10, TimeUnit.SECONDS))
+
+	override def updatePage(pageToUpdate: Page): Unit =
+		Await.result(
+			pagesCollection.updateOne(Filters.equal("title", pageToUpdate.title), Updates.set("messages", pageToUpdate.messages)).toFuture(),
+			Duration(10, TimeUnit.SECONDS)
+		)
 }

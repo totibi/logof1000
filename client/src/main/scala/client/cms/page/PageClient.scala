@@ -15,16 +15,22 @@ object PageClient {
 	def addMessageButton(page: Page, messageBlock: HTMLElement): HTMLElement = {
 		val messageInput = textarea(*.id := "tinymce-textarea").render
 		val addMessageButton =
+				button(
+					"new message",
+					*.onclick := { (event: dom.Event) ⇒
+						tinymce.triggerSave() // needed in ajax submit otherwise input.value will be empty
+						client.Ajaxer[MainAPI].updatePage(page.cloneToAddMessage(Message(messageInput.value))).call().foreach { result ⇒
+							messageBlock.innerHTML += messageInput.value
+						}
+					}
+				).render
+		val deleteButton  =
 			button(
 				"new message",
 				*.onclick := { (event: dom.Event) ⇒
 					tinymce.triggerSave() // needed in ajax submit otherwise input.value will be empty
-					val newMessage = Message(messageInput.value)
-					client.Ajaxer[MainAPI].addMessageToPage(newMessage, page).call().foreach { result ⇒
-						if (result) {
-							page.messages.addMessage(newMessage)
-							messageBlock.innerHTML += newMessage.content
-						}
+					client.Ajaxer[MainAPI].updatePage(page.cloneToAddMessage(Message(messageInput.value))).call().foreach { result ⇒
+						messageBlock.innerHTML += messageInput.value
 					}
 				}
 			).render
@@ -37,7 +43,7 @@ object PageClient {
 	def page2Element(page: Page): HTMLElement = {
 		val messageBlock = div(*.float := "right").render
 		clearComponent(messageBlock)
-		page.messages.getMessages.foreach(message ⇒ messageBlock.innerHTML += message.content)
+		page.messages.foreach(message ⇒ messageBlock.innerHTML += message.content)
 		div(
 			script(
 				// TODO вынести команду удаления редакторов в скала код (необходим всвязи с тем, что элементы появляются динамически, иногда через ajax)
@@ -69,7 +75,7 @@ object PageClient {
 	}
 
 	def clearComponent(component: HTMLElement): Unit =
-		while (component.firstChild != null){
+		while (component.firstChild != null) {
 			component.removeChild(component.firstChild)
 		}
 
