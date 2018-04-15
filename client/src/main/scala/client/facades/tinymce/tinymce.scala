@@ -1,4 +1,4 @@
-package client.tinymce
+package client.facades.tinymce
 
 import scala.scalajs.js
 
