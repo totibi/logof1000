@@ -11,6 +11,7 @@ import upickle.default
 
 import scala.concurrent.Future
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
+import scala.scalajs.js
 import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel}
 import scalatags.JsDom.short._
 
@@ -68,8 +69,7 @@ object Client {
 		dom.document.body.appendChild(
 			div(
 				menuContainer,
-				messagesContainer,
-				RssClient.skeleton
+				messagesContainer
 			).render
 		)
 	}
@@ -87,6 +87,14 @@ object Client {
 								messagesContainer.appendChild(PageClient.page2Element(page))
 							}
 							}
+						),
+						button(
+							"Kanban",
+							*.onclick := { (event: dom.Event) ⇒ {
+								clearComponent(messagesContainer)
+								PageClient.pageKanban(messagesContainer, page)
+							}
+							}
 						)
 					)
 				)
@@ -95,7 +103,7 @@ object Client {
 	}
 
 	def clearComponent(component: HTMLElement): Unit = {
-		while (component.firstChild != null){
+		while (component.firstChild != null) {
 			component.removeChild(component.firstChild)
 		}
 	}

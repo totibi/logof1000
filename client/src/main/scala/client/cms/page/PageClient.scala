@@ -1,13 +1,14 @@
 package client.cms.page
 
 import autowire._
-import client.tinymce.tinymce
+import client.facades.tinymce.tinymce
 import org.scalajs.dom
 import org.scalajs.dom.raw.HTMLElement
 import shared.MainAPI
 import shared.cms.message.Message
 import shared.cms.page.Page
 
+import scala.collection.mutable
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 import scalatags.JsDom.short._
 
@@ -15,16 +16,16 @@ object PageClient {
 	def addMessageButton(page: Page, messageBlock: HTMLElement): HTMLElement = {
 		val messageInput = textarea(*.id := "tinymce-textarea").render
 		val addMessageButton =
-				button(
-					"new message",
-					*.onclick := { (event: dom.Event) ⇒
-						tinymce.triggerSave() // needed in ajax submit otherwise input.value will be empty
-						client.Ajaxer[MainAPI].updatePage(page.cloneToAddMessage(Message(messageInput.value))).call().foreach { result ⇒
-							messageBlock.innerHTML += messageInput.value
-						}
+			button(
+				"new message",
+				*.onclick := { (event: dom.Event) ⇒
+					tinymce.triggerSave() // needed in ajax submit otherwise input.value will be empty
+					client.Ajaxer[MainAPI].updatePage(page.cloneToAddMessage(Message(messageInput.value))).call().foreach { result ⇒
+						messageBlock.innerHTML += messageInput.value
 					}
-				).render
-		val deleteButton  =
+				}
+			).render
+		val deleteButton =
 			button(
 				"new message",
 				*.onclick := { (event: dom.Event) ⇒
@@ -72,6 +73,44 @@ object PageClient {
 			addMessageButton(page, messageBlock),
 			messageBlock
 		).render
+	}
+
+	def pageKanban(root: HTMLElement, page: Page): Unit = {
+		import scala.scalajs.js.Dynamic.{global ⇒ g, newInstance ⇒ jsnew}
+		import scala.scalajs.js
+		val kanbanHtmlDiv = div(*.id := "myKanban").render
+		root.appendChild(kanbanHtmlDiv)
+		val kanban = jsnew(g.jKanban)(js.Dynamic.literal(
+			element = "#myKanban",
+			gutter = "10px",
+			widthBoard = "450px",
+			addItemButton = true,
+			buttonClick = (el: js.Object, boardId: js.Object) ⇒ {
+				val formItem = form(
+					div(
+						*.`class` := "form-group",
+						textarea(*.`class` := "form-control", *.rows := "2", *.autofocus := true)
+					),
+					div(
+						*.`class` := "form-group",
+						button(*.`type` := "submit", *.`class` := "btn btn-primary btn-xs pull-right", "Submit"),
+						button(*.`type` := "button", *.id := "CancelBtn", *.`class` := "btn btn-default btn-xs pull-right", "Cancel")
+					),
+					*.`class` := "itemform"
+				)
+//				kanban
+//					addForm(boardId, formItem)
+			},
+			boards = js.Array(
+				js.Dynamic.literal(
+					id = "wtf",
+					title = "just die",
+					`class` = "info,good"
+				)
+			)
+			//			"click" →
+		))
+		kanban
 	}
 
 	def clearComponent(component: HTMLElement): Unit =
