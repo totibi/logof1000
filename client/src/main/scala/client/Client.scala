@@ -1,7 +1,8 @@
 package client
 
 import autowire._
-import client.cms.page.PageClient
+import client.Client.pagesElem
+import client.cms.view.page.PageClient
 import client.rss.RssClient
 import org.scalajs.dom
 import org.scalajs.dom.raw.HTMLElement
@@ -33,7 +34,7 @@ object Ajaxer extends autowire.Client[String, upickle.default.Reader, upickle.de
 @JSExportTopLevel("Client")
 object Client {
 
-	val menuContainer: HTMLElement = div(*.float := "left").render
+	val menuContainer: HTMLElement = div().render
 	// Отоброжает содержимое выбранной страницы
 	val messagesContainer: HTMLElement = div(*.float := "left").render
 
@@ -45,33 +46,31 @@ object Client {
 				"add page",
 				*.onclick := { (event: dom.Event) ⇒
 					Ajaxer[MainAPI].addPage(Page(pageTitleInput.value, Nil)).call()
+					renderPages
 				}
 			)
-		val pagesElem = ul().render
-		val getPagesButton =
-			button(
-				"get pages",
-				*.onclick := { (event: dom.Event) ⇒
-					Ajaxer[MainAPI].getPages().call().foreach {
-						pages ⇒ fillPagesUL(pagesElem, pages)
-					}
-				}
-			).render
 		menuContainer.appendChild(
 			div(
 				pageTitleInput,
 				br,
 				addPageButton,
-				getPagesButton,
 				pagesElem
 			).render
 		)
+		renderPages
 		dom.document.body.appendChild(
 			div(
 				menuContainer,
 				messagesContainer
 			).render
 		)
+	}
+
+	val pagesElem = ul().render
+	def renderPages: Unit = {
+		Ajaxer[MainAPI].getPages().call().foreach {
+			pages ⇒ fillPagesUL(pagesElem, pages)
+		}
 	}
 
 	def fillPagesUL(pagesElem: HTMLElement, pages: Seq[Page]): Unit = {
@@ -89,13 +88,24 @@ object Client {
 							}
 						),
 						button(
-							"Kanban",
+							"-",
 							*.onclick := { (event: dom.Event) ⇒ {
 								clearComponent(messagesContainer)
-								PageClient.pageKanban(messagesContainer, page)
+								Ajaxer[MainAPI].deletePage(page).call().foreach {
+									isDeleted ⇒ if (isDeleted) renderPages
+								}
 							}
 							}
 						)
+//						,
+//						button(
+//							"Kanban",
+//							*.onclick := { (event: dom.Event) ⇒ {
+//								clearComponent(messagesContainer)
+//								PageClient.pageKanban(messagesContainer, page)
+//							}
+//							}
+//						)
 					)
 				)
 			).render

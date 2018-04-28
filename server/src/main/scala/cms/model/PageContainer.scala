@@ -10,12 +10,15 @@ import shared.cms.page.Page
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 
+// TODO проблема с mongoid, точнее их нет в классах, приходится работать по titles
 abstract class PageContainer {
 	def getPages: Seq[Page]
 
 	def addPage(pageToAdd: Page): Unit
 
 	def updatePage(pageToUpdate: Page): Unit
+
+	def deletePage(pageToDelete: Page): Unit
 }
 
 object PageContainerInDB extends PageContainer {
@@ -37,7 +40,9 @@ object PageContainerInDB extends PageContainer {
 
 	override def updatePage(pageToUpdate: Page): Unit =
 		Await.result(
-			pagesCollection.updateOne(Filters.equal("title", pageToUpdate.title), Updates.set("messages", pageToUpdate.messages)).toFuture(),
+			pagesCollection.updateOne(Filters.equal("title", pageToUpdate.title),Updates.set("messages", pageToUpdate.messages)).toFuture(),
 			Duration(10, TimeUnit.SECONDS)
 		)
+
+	override def deletePage(pageToDelete: Page): Unit = Await.result(pagesCollection.deleteOne(Filters.equal("title", pageToDelete.title)).toFuture(), Duration(10, TimeUnit.SECONDS))
 }

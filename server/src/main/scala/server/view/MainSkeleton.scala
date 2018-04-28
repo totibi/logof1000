@@ -17,10 +17,7 @@ object MainSkeleton {
 				script(`type`:="text/javascript", src:="/assets/jkanban/jkanban.min.js"),	// https://github.com/riktar/jkanban
 				link(rel := "stylesheet", href := "/assets/jkanban/jkanban.min.css")
 			),
-			body(
-				onload := onLoadScript,
-			"Hello"
-			)
+			body(onload := onLoadScript)
 		).render
 
 }

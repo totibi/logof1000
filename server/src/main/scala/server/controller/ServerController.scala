@@ -25,6 +25,11 @@ trait ServerController extends MainAPI {
 		pageContainer.getPages
 	}
 
+	override def deletePage(pageToDelete: Page): Boolean = {
+		pageContainer.deletePage(pageToDelete)
+		true
+	}
+
 	override def fetchFeeds(url: String): Seq[RssFeed] = {
 		RssReader.read(new URL(url))
 	}

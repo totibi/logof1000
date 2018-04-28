@@ -1,4 +1,4 @@
-package client.cms.page
+package client.cms.view.page
 
 import autowire._
 import client.facades.jkanban.{JKanban, JKanbanColumn, JKanbanItem, JKanbanOptions}
