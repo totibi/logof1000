@@ -15,7 +15,8 @@ object MainSkeleton {
 				script(`type`:="text/javascript", src:="/assets/client-fastopt.js"), // scalajs
 				script(`type`:="text/javascript", src:="/assets/tinymce/tinymce.min.js"),  // tinymce
 				script(`type`:="text/javascript", src:="/assets/jkanban/jkanban.min.js"),	// https://github.com/riktar/jkanban
-				link(rel := "stylesheet", href := "/assets/jkanban/jkanban.min.css")
+				link(rel := "stylesheet", href := "/assets/jkanban/jkanban.min.css"),
+				link(rel := "stylesheet", href := "/assets/logMain.css")
 			),
 			body(onload := onLoadScript)
 		).render
