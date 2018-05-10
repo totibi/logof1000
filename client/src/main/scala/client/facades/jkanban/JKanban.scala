@@ -9,7 +9,6 @@ class JKanban(options: JKanbanOptions) extends js.Object {
 
 }
 
-@ScalaJSDefined
 trait JKanbanOptions extends js.Object{
 	// Selector for kanban html element (example: html div with id = "myKanban" => element = "#myKanban")
 	val element: String
@@ -37,7 +36,6 @@ trait JKanbanOptions extends js.Object{
 
 
 // Column of kanban board
-@ScalaJSDefined
 trait JKanbanColumn extends js.Object{
 	// id of the column
 	val id : String
@@ -52,7 +50,6 @@ trait JKanbanColumn extends js.Object{
 }
 
 // item of kanban column
-@ScalaJSDefined
 trait JKanbanItem extends js.Object{
 	val id: String
 	// content of the card

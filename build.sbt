@@ -14,6 +14,7 @@ lazy val server = (project in file("server")).settings(commonSettings).settings(
   dependsOn(sharedJvm)
 
 lazy val client = (project in file("client")).settings(commonSettings).settings(
+	scalacOptions += "-P:scalajs:sjsDefinedByDefault",
   libraryDependencies ++= Seq(
     "org.scala-js" %%% "scalajs-dom" % "0.9.3"
   )

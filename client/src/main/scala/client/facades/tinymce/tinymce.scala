@@ -4,7 +4,9 @@ import org.scalajs.dom.raw.HTMLElement
 import scalatags.JsDom.short.script
 
 import scala.scalajs.js
+import scala.scalajs.js.annotation.JSGlobal
 
+@JSGlobal
 @js.native
 object tinymce extends js.Object {
 	// needed in ajax submit otherwise input.value will be empty
