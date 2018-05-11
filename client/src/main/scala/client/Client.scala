@@ -20,7 +20,7 @@ object Ajaxer extends autowire.Client[String, upickle.default.Reader, upickle.de
 
 	override def read[Result](p: String)(implicit evidence$1: default.Reader[Result]): Result = upickle.default.read[Result](p)
 
-	override def write[Result](r: Result)(implicit evidence$2: default.Writer[Result]): String = upickle.default.write(r)
+	override def write[Result](r: Result)(implicit evidence$2: default.Writer[Result]): String =  upickle.default.write(r)
 }
 
 @JSExportTopLevel("Client")
