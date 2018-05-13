@@ -29,7 +29,7 @@ object Client {
 	@JSExport
 	def main(): Unit = {
 		dom.document.body.appendChild(
-			MainView.refreshMainView
+			MainView.openMainView
 		)
 	}
 

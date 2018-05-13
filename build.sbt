@@ -26,6 +26,7 @@ lazy val sharedJs = shared.js
 lazy val sharedJvm = shared.jvm
 
 lazy val commonSettings = Seq(
+//	scalacOptions += "-Ylog-classpath",
 	scalaVersion := "2.12.2",
 	organization := "com.memories",
 	libraryDependencies ++= Seq(

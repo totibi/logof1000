@@ -30,3 +30,13 @@
     border-radius: 0.5em;
     padding: 1em;
 }
+
+.messageCard{
+    border: 1px #3A3A3A;
+    transform: scale(0.8);
+}
+
+.messageCard:only-child{
+    width: 30em;
+    transform: scale(0.5);
+}

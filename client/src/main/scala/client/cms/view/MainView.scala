@@ -1,8 +1,7 @@
 package client.cms.view
 
-import client.Ajaxer
-import client.cms.view.page.PageView
 import autowire._
+import client.Ajaxer
 import org.scalajs.dom
 import org.scalajs.dom.html.{LI, UList}
 import org.scalajs.dom.raw.HTMLElement
@@ -11,11 +10,15 @@ import shared.MainAPI
 import shared.cms.page.Page
 
 
-object MainView{
+object MainView {
+
+	def openMainView: HTMLElement = {
+		menuContainer.updatePagesContainer
+		getMainContainer
+	}
 
 	// main body for html
-	def refreshMainView: HTMLElement = {
-		menuContainer.updatePagesContainer
+	def getMainContainer: HTMLElement = {
 		mainContainer
 	}
 
@@ -28,7 +31,6 @@ object MainView{
 	// contentContainer - page content container
 	class MenuContainer(contentContainer: HTMLElement) {
 		val container: HTMLElement = div(*.`class` := "menuContainer").render
-		//		val pagesListContainer: HTMLElement = div().render
 		val pagesList: UList = ul.render
 		val pageTitleInput = input.render
 		val addPageButton =
@@ -40,14 +42,17 @@ object MainView{
 					}
 				}
 			).render
-		container.appendChild(pageTitleInput)
-		container.appendChild(br.render)
-		container.appendChild(addPageButton)
-		container.appendChild(pagesList)
+		container.appendChildren(
+			pageTitleInput,
+			br.render,
+			addPageButton,
+			pagesList
+		)
 
 		// render list of pages
 		def updatePagesContainer: Unit = {
-			pagesList.clearFromChilds()
+			// TODO mb better clear after executed future
+			pagesList.clearFromChildren()
 			Ajaxer[MainAPI].getPages().call().foreach {
 				pages ⇒ fillPagesListContainer(pages)
 			}
@@ -61,15 +66,14 @@ object MainView{
 				button(
 					page.title,
 					*.onclick := { (event: dom.Event) ⇒ {
-						contentContainer.clearFromChilds()
-						contentContainer.appendChild(PageView.page2Element(page))
+						contentContainer.clearFromChildren().appendPage(page)
 					}
 					}
 				),
 				button(
 					"-",
 					*.onclick := { (event: dom.Event) ⇒ {
-						contentContainer.clearFromChilds()
+						contentContainer.clearFromChildren()
 						Ajaxer[MainAPI].deletePage(page).call().foreach {
 							deletedPage ⇒ pagesList.removeNodesFromElement(_.id == s"${deletedPage.title}-menu")
 						}
@@ -95,9 +99,10 @@ object MainView{
 	// main body for html
 	val mainContainer: HTMLElement = {
 		val mainContainer: HTMLElement = div(*.`class` := "mainContainer").render
-		mainContainer.appendChild(contentContainer)
-		mainContainer.appendChild(menuContainer.container)
-		mainContainer
+		mainContainer.appendChildren(
+			contentContainer,
+			menuContainer.container
+		)
 	}
 
 }
