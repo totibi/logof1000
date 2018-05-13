@@ -1,11 +1,15 @@
 package client.common
 
-import client.cms.view.message.WithRichElementForMessage
-import client.cms.view.page.WithRichElementForPage
+import client.cms.view.message.MessageView
+import client.cms.view.page.PageView
 import org.scalajs.dom.raw.HTMLElement
 import org.scalajs.dom.{Element, Node}
+import shared.cms.message.Message
+import shared.cms.page.Page
 
-trait WithRichHTMLElements extends WithRichElementForPage with WithRichElementForMessage{
+trait WithRichHTMLElements
+//	extends WithRichElementForPage with WithRichElementForMessage  TODO Upickle broken
+ {
 
 	// TODO val for ApiForPage using
 	// TODO look for decorator which allow using all methods like fluent api (returning initial element for next api invokes) (look TODO fluent decorator)
@@ -44,6 +48,29 @@ trait WithRichHTMLElements extends WithRichElementForPage with WithRichElementFo
 			}
 			currentElem
 		}
+
+		// TODO fluent decorator
+		// Adding page html elements to current html element
+		def appendPage(page: Page): HTMLElement = {
+			PageView.buildPageContent(currentElem, page)
+			currentElem
+		}
+
+		// TODO fluent decorator
+		// Adding message content to current element
+		def appendMessage(page: Page, message: Message): HTMLElement = {
+			MessageView.addMessageContent(currentElem, page, message)
+			currentElem
+		}
+
+		// TODO fluent decorator
+		//		 Adding message content to current element
+		def appendMessages(page: Page): HTMLElement = {
+			// TODO i dont like this one (kick page with message for back update cake)
+			page.messages foreach (message ⇒ currentElem.appendMessage(page, message))
+			currentElem
+		}
+
 	}
 
 }

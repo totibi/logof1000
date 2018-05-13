@@ -19,8 +19,15 @@ object PageView {
 				*.onclick := { (event: dom.Event) ⇒
 					tinymce.triggerSave() // needed in ajax submit otherwise input.value will be empty
 					client.Ajaxer[MainAPI].updatePage(page.cloneToAddMessage(Message(messageInput.value))).call().foreach { result ⇒
-						// TODO obserable pattern for removing this dependencie
-						messageBlock.innerHTML += messageInput.value
+						// TODO obserable pattern for removing this(adding message to page by this code and updating button) dependencie
+						val oldButton = dom.document.getElementById(getPageMenuBtnClass(page))
+						messageBlock.appendChild({
+							val kek = div().render
+							val wtf = div().render
+							kek.innerHTML = messageInput.value
+							wtf.appendChild(kek)
+							wtf
+						})
 					}
 				}
 			).render
@@ -30,10 +37,18 @@ object PageView {
 		).render
 	}
 
+	def getPageMenuItemId(page: Page): String ={
+		s"${page.title}-menuItem"
+	}
+
+	def getPageMenuBtnClass(page: Page): String ={
+		s"${page.title}-menuBtn"
+	}
+
 	// fill container by page content
 	def buildPageContent(container: HTMLElement, page: Page): Unit = {
 		val messagesBlock = div(*.`class` := "messagesBlock").render
-		messagesBlock.appendMessages(page.messages)
+		messagesBlock.appendMessages(page)
 		container.appendChildren(
 			h1("Hello this is " + page.title).render,
 			getNewMessageArea(page, messagesBlock),

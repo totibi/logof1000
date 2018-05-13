@@ -23,6 +23,9 @@ object Ajaxer extends autowire.Client[String, upickle.default.Reader, upickle.de
 	override def write[Result](r: Result)(implicit evidence$2: default.Writer[Result]): String =  upickle.default.write(r)
 }
 
+
+// TODO big problems with data of object need framework or something for observable (redux and etc)
+// (for example create 2 msg and refresh page - will only save lust one, because initial client...)
 @JSExportTopLevel("Client")
 object Client {
 

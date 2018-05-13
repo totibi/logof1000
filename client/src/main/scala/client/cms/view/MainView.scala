@@ -2,6 +2,7 @@ package client.cms.view
 
 import autowire._
 import client.Ajaxer
+import client.cms.view.page.PageView
 import org.scalajs.dom
 import org.scalajs.dom.html.{LI, UList}
 import org.scalajs.dom.raw.HTMLElement
@@ -62,9 +63,10 @@ object MainView {
 
 		private def getPagesListElement(page: Page): LI = {
 			li(
-				*.id := s"${page.title}-menu",
+				*.id := PageView.getPageMenuBtnClass(page),
 				button(
 					page.title,
+					*.`class` := PageView.getPageMenuBtnClass(page),
 					*.onclick := { (event: dom.Event) ⇒ {
 						contentContainer.clearFromChildren().appendPage(page)
 					}
@@ -75,7 +77,7 @@ object MainView {
 					*.onclick := { (event: dom.Event) ⇒ {
 						contentContainer.clearFromChildren()
 						Ajaxer[MainAPI].deletePage(page).call().foreach {
-							deletedPage ⇒ pagesList.removeNodesFromElement(_.id == s"${deletedPage.title}-menu")
+							deletedPage ⇒ pagesList.removeNodesFromElement(_.id == PageView.getPageMenuItemId(page))
 						}
 					}
 					}
