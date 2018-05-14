@@ -73,7 +73,15 @@ object MainView {
 					}
 				),
 				button(
-					"-",
+					"Kanban",
+					*.onclick := { (event: dom.Event) ⇒ {
+						contentContainer.clearFromChildren()
+						PageView.pageKanban(contentContainer, page)
+					}
+					}
+				),
+				button(
+					"delete",
 					*.onclick := { (event: dom.Event) ⇒ {
 						contentContainer.clearFromChildren()
 						Ajaxer[MainAPI].deletePage(page).call().foreach {
@@ -82,15 +90,6 @@ object MainView {
 					}
 					}
 				)
-				//						,
-				//						button(
-				//							"Kanban",
-				//							*.onclick := { (event: dom.Event) ⇒ {
-				//								clearComponent(messagesContainer)
-				//								PageClient.pageKanban(messagesContainer, page)
-				//							}
-				//							}
-				//						)
 			).render
 		}
 	}

@@ -1,8 +1,9 @@
 package client.facades.jkanban
 
 import scala.scalajs.js
-import scala.scalajs.js.annotation.{JSGlobal, ScalaJSDefined}
+import scala.scalajs.js.annotation.JSGlobal
 
+//https://github.com/riktar/jkanban
 @js.native
 @JSGlobal(name = "jKanban")
 class JKanban(options: JKanbanOptions) extends js.Object {

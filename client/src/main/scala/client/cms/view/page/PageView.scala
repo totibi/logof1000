@@ -1,6 +1,7 @@
 package client.cms.view.page
 
 import autowire._
+import client.facades.jkanban.{JKanban, JKanbanColumn, JKanbanItem, JKanbanOptions}
 import client.facades.tinymce.{TinyMCEScala, tinymce}
 import org.scalajs.dom
 import org.scalajs.dom.raw.HTMLElement
@@ -8,6 +9,8 @@ import scalatags.JsDom.short._
 import shared.MainAPI
 import shared.cms.message.Message
 import shared.cms.page.Page
+
+import scala.scalajs.js.UndefOr
 
 object PageView {
 	def getNewMessageArea(page: Page, messageBlock: HTMLElement): HTMLElement = {
@@ -37,11 +40,11 @@ object PageView {
 		).render
 	}
 
-	def getPageMenuItemId(page: Page): String ={
+	def getPageMenuItemId(page: Page): String = {
 		s"${page.title}-menuItem"
 	}
 
-	def getPageMenuBtnClass(page: Page): String ={
+	def getPageMenuBtnClass(page: Page): String = {
 		s"${page.title}-menuBtn"
 	}
 
@@ -57,24 +60,38 @@ object PageView {
 	}
 
 	// kanban for selected page
-//	def pageKanban(root: HTMLElement, page: Page): Unit = {
-//		import scala.scalajs.js
-//		val kanbanHtmlDiv = div(*.id := "myKanban").render
-//		root.appendChild(kanbanHtmlDiv)
-//		val options = new JKanbanOptions {
-//			override val element: String = "#myKanban"
-//			override val boards: js.Array[JKanbanColumn] =  js.Array(
-//				new JKanbanColumn {
-//					override val id: String = "first"
-//					override val item: js.Array[JKanbanItem] = js.Array(new JKanbanItem {
-//						override val id: String = "kek"
-//						override val title: UndefOr[String] = "whatefuck"
-//					})
-//				}
-//			)
-//		}
-//		scala.scalajs.js.special.debugger()
-//		val kanban = new JKanban(options)
-//	}
+	def pageKanban(container: HTMLElement, page: Page): Unit = {
+		import scala.scalajs.js
+		val kanbanHtmlDiv = div(*.id := "myKanban").render
+		container.appendChild(kanbanHtmlDiv)
+		val options = new JKanbanOptions {
+			override val element: String = "#myKanban"
+			override val boards: js.Array[JKanbanColumn] = js.Array(
+				new JKanbanColumn {
+					override val title: UndefOr[String] = "ToDo"
+					override val id: String = "todo-kanban"
+					override val item: js.Array[JKanbanItem] = js.Array(new JKanbanItem {
+						override val id: String = "kek"
+						override val title: UndefOr[String] = "whatefuck"
+					})
+				}, new JKanbanColumn {
+					override val title: UndefOr[String] = "In Progress"
+					override val id: String = "inprogress-kanban"
+					override val item: js.Array[JKanbanItem] = js.Array(new JKanbanItem {
+						override val id: String = "kek"
+						override val title: UndefOr[String] = "whatefuck"
+					})
+				}, new JKanbanColumn {
+					override val title: UndefOr[String] = "Closed"
+					override val id: String = "closed-kanban"
+					override val item: js.Array[JKanbanItem] = js.Array(new JKanbanItem {
+						override val id: String = "kek"
+						override val title: UndefOr[String] = "whatefuck"
+					})
+				}
+			)
+		}
+		val kanban = new JKanban(options)
+	}
 
 }
