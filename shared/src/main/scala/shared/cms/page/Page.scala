@@ -4,7 +4,7 @@ import shared.cms.message.Message
 import shared.cms.page.kanban.Kanban
 import upickle.default.{macroRW, ReadWriter ⇒ RW}
 
-case class Page(title: String, messages: Seq[Message], kanban: Kanban = new Kanban()){
+case class Page(title: String, messages: Seq[Message], kanban: Kanban = Kanban()){
 	// TODO look why i do this, look for better
 	def cloneToAddMessage(newMessage: Message) = Page(title, messages :+ newMessage, kanban)
 	def cloneWithNewMessages(newMessages: Seq[Message]) = Page(title, newMessages, kanban)

@@ -55,11 +55,11 @@ trait JKanbanColumn extends js.Object{
 
 // item of kanban column
 trait IJKanbanItem extends js.Object{
-	val id: String
+	val id: js.UndefOr[String] = js.undefined
 	// content of the card
 	val title: js.UndefOr[String] = js.undefined
 }
 
-class JKanbanItem(val id: String,content: String) extends IJKanbanItem{
+class JKanbanItem(content: String) extends IJKanbanItem{
 	override val title: UndefOr[String] = content
 }

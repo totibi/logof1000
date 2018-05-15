@@ -2,12 +2,15 @@ package client.common
 
 import client.cms.view.message.MessageView
 import client.cms.view.page.PageView
-import client.facades.jkanban.{JKanban, JKanbanColumn}
+import client.facades.jkanban._
 import org.scalajs.dom.raw.HTMLElement
 import org.scalajs.dom.{Element, Node}
 import shared.cms.message.Message
 import shared.cms.page.Page
 import shared.cms.page.kanban.{Kanban, KanbanColumn, KanbanItem}
+
+import scala.scalajs.js
+import scala.scalajs.js.UndefOr
 
 trait WithRichHTMLElements
 //	extends WithRichElementForPage with WithRichElementForMessage  TODO Upickle broken
@@ -77,7 +80,7 @@ trait WithRichHTMLElements
 
 	// TODO remove this layer? Jkanban - kanban you have upickle but jkanban is view
 	// for transfer client Kanban data to server
-	implicit class RichClientKanban(clientKanban: JKanban) {
+	implicit class RichClientJKanban(clientKanban: JKanban) {
 
 		def toServerData: Kanban = {
 			Kanban(columnsToServerColumns())
@@ -90,9 +93,55 @@ trait WithRichHTMLElements
 		}
 
 		private def itemsToServerItems(jColumn: JKanbanColumn): Seq[KanbanItem] = {
-			jColumn.item.map(jItem ⇒ KanbanItem(jItem.title.getOrElse("undefined"))).asInstanceOf[Seq[KanbanItem]]
+			jColumn.item.map(jItem ⇒ KanbanItem(jItem.title.getOrElse("undefined")))
 		}
 
+	}
+
+	// for transfer server data to client
+	implicit class KanbanToClient(serverKanban: Kanban) {
+
+		import scala.scalajs.js
+		import js.JSConverters._
+
+		def toClientKanbanOptions: JKanbanOptions = {
+			val options = new JKanbanOptions {
+				override val element: String = "#myKanban"
+				override val boards: js.Array[JKanbanColumn] = getClientsColumns().toJSArray
+			}
+			options
+		}
+
+		private def getClientsColumns(): Seq[JKanbanColumn] = {
+			serverKanban.columns.map(_.toClientColumn)
+		}
+
+		private def columnItemsToServerItems(kanbanColumn: KanbanColumn): Seq[IJKanbanItem] = {
+			kanbanColumn.items.map(item ⇒ new JKanbanItem(content = item.content))
+		}
+
+	}
+
+	implicit class RichKanbanColumn(kanbanColumn: KanbanColumn) {
+
+		import js.JSConverters._
+
+		def additionalStringForId = "-kanbanColumn"
+
+		def getClientId = s"${kanbanColumn.title}$additionalStringForId"
+
+		def toClientColumn: JKanbanColumn = {
+			new JKanbanColumn {
+				override val id: String = getClientId
+				override val title: UndefOr[String] = kanbanColumn.title
+				override val item: js.Array[IJKanbanItem] = columnItemsToServerItems().toJSArray
+			}
+		}
+
+
+		private def columnItemsToServerItems(): Seq[IJKanbanItem] = {
+			kanbanColumn.items.map(item ⇒ new JKanbanItem(content = item.content))
+		}
 	}
 
 }

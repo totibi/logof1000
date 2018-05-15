@@ -11,8 +11,6 @@ import shared.MainAPI
 import shared.cms.message.Message
 import shared.cms.page.Page
 
-import scala.scalajs.js.UndefOr
-
 object PageView {
 	def getNewMessageArea(page: Page, messageBlock: HTMLElement): HTMLElement = {
 		val tinymceAreaId = "tinymce-textarea"
@@ -62,36 +60,20 @@ object PageView {
 
 	// kanban for selected page
 	def pageKanban(container: HTMLElement, page: Page): Unit = {
-		import scala.scalajs.js
 		val kanbanHtmlDiv = div(*.id := "myKanban").render
 		container.appendChild(kanbanHtmlDiv)
-		val options = new JKanbanOptions {
-			override val element: String = "#myKanban"
-			override val boards: js.Array[JKanbanColumn] = js.Array(
-				new JKanbanColumn {
-					override val title: UndefOr[String] = "ToDo"
-					override val id: String = "todo-kanban"
-					override val item: js.Array[IJKanbanItem] = js.Array()
-				}, new JKanbanColumn {
-					override val title: UndefOr[String] = "In Progress"
-					override val id: String = "inprogress-kanban"
-					override val item: js.Array[IJKanbanItem] = js.Array()
-				}, new JKanbanColumn {
-					override val title: UndefOr[String] = "Closed"
-					override val id: String = "closed-kanban"
-					override val item: js.Array[IJKanbanItem] = js.Array()
-				}
-			)
-		}
-		val kanban = new JKanban(options)
+		// TODO this will init kanban to work with kanbanHtmlDiv
+		val kanban = new JKanban(page.kanban.toClientKanbanOptions)
 		// TODO refactoring
-		val taskTextInput = textarea.render
+		val taskTextInput = input.render
 		val addTaskBtn =
 			button(
 				"create task",
 				*.onclick := { (event: dom.Event) ⇒
-					kanban.addElement("todo-kanban", new JKanbanItem("newTask", taskTextInput.value))
-					Ajaxer[MainAPI].updatePage(page.cloneToChangeKanban(kanban.toServerData)).call()
+					kanban.addElement(page.kanban.columns.head.getClientId, new JKanbanItem(taskTextInput.value))
+					Ajaxer[MainAPI].updatePage(page.cloneToChangeKanban(kanban.toServerData)).call().foreach{
+						wtfpage ⇒ println(wtfpage)
+					}
 				}
 			).render
 		container.appendChildren(taskTextInput, addTaskBtn)

@@ -9,6 +9,7 @@ import org.scalajs.dom.raw.HTMLElement
 import scalatags.JsDom.short._
 import shared.MainAPI
 import shared.cms.page.Page
+import shared.cms.page.kanban.{Kanban, KanbanColumn}
 
 
 object MainView {
@@ -38,7 +39,8 @@ object MainView {
 			button(
 				"add page",
 				*.onclick := { (event: dom.Event) ⇒
-					Ajaxer[MainAPI].addPage(Page(pageTitleInput.value, Nil)).call().foreach {
+					val newKanban = Kanban(Seq(KanbanColumn("ToDo"), KanbanColumn("In Progress"), KanbanColumn("Closed")))
+					Ajaxer[MainAPI].addPage(Page(pageTitleInput.value, Nil, newKanban)).call().foreach {
 						createdPage ⇒ pagesList.appendChild(getPagesListElement(createdPage))
 					}
 				}

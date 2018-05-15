@@ -6,7 +6,7 @@ import org.mongodb.scala.MongoCollection
 import server.model.ServerDBC
 import shared.cms.message.Message
 import shared.cms.page.Page
-import shared.cms.page.kanban.Kanban
+import shared.cms.page.kanban.{Kanban, KanbanColumn, KanbanItem}
 
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
@@ -28,8 +28,8 @@ object PageContainerInDB extends PageContainer {
 	import org.mongodb.scala.bson.codecs.DEFAULT_CODEC_REGISTRY
 	import org.mongodb.scala.bson.codecs.Macros._
 	import org.mongodb.scala.model.{Filters, Updates}
-
-	private val pagesRegistry = fromRegistries(fromProviders(classOf[Page], classOf[Message], classOf[Kanban]), DEFAULT_CODEC_REGISTRY)
+																																								//TODO to much classes
+	private val pagesRegistry = fromRegistries(fromProviders(classOf[Page], classOf[Message], classOf[Kanban], classOf[KanbanColumn], classOf[KanbanItem]), DEFAULT_CODEC_REGISTRY)
 
 	val collectionName = "PagesCollection"
 	val pagesCollection: MongoCollection[Page] = ServerDBC.getDB(pagesRegistry).getCollection(collectionName)
