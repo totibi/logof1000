@@ -1,13 +1,15 @@
 package client.facades.jkanban
 
 import scala.scalajs.js
+import scala.scalajs.js.UndefOr
 import scala.scalajs.js.annotation.JSGlobal
 
 //https://github.com/riktar/jkanban
 @js.native
 @JSGlobal(name = "jKanban")
-class JKanban(options: JKanbanOptions) extends js.Object {
-
+class JKanban(val options: JKanbanOptions) extends js.Object {
+	// add element in the board with ID boardID, element is the standart format
+	def addElement(boardID: String, element: IJKanbanItem): Unit = js.native
 }
 
 trait JKanbanOptions extends js.Object{
@@ -32,7 +34,8 @@ trait JKanbanOptions extends js.Object{
 //	dropEl          : function (el, target, source, sibling) {},    // callback when any board's item drop in a board
 //	dragBoard       : function (el, source) {},                     // callback when any board stop drag
 //	dragendBoard    : function (el) {},                             // callback when any board stop drag
-//	buttonClick     : function(el, boardId) {}                      // callback when the board's button is clicked
+	// callback when the board's button is clicked
+	val buttonClick: js.UndefOr[js.Function2[js.Object, String, _]] = js.undefined
 }
 
 
@@ -47,12 +50,16 @@ trait JKanbanColumn extends js.Object{
 	// array of ids of boards where items can be dropped (default: [])
 	val dragTo: js.UndefOr[js.Array[String]] = js.undefined
 	// items of this column
-	val item: js.Array[JKanbanItem]
+	val item: js.Array[IJKanbanItem]
 }
 
 // item of kanban column
-trait JKanbanItem extends js.Object{
+trait IJKanbanItem extends js.Object{
 	val id: String
 	// content of the card
 	val title: js.UndefOr[String] = js.undefined
+}
+
+class JKanbanItem(val id: String,content: String) extends IJKanbanItem{
+	override val title: UndefOr[String] = content
 }

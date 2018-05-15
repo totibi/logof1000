@@ -1,7 +1,8 @@
 package client.cms.view.page
 
 import autowire._
-import client.facades.jkanban.{JKanban, JKanbanColumn, JKanbanItem, JKanbanOptions}
+import client.Ajaxer
+import client.facades.jkanban._
 import client.facades.tinymce.{TinyMCEScala, tinymce}
 import org.scalajs.dom
 import org.scalajs.dom.raw.HTMLElement
@@ -70,28 +71,30 @@ object PageView {
 				new JKanbanColumn {
 					override val title: UndefOr[String] = "ToDo"
 					override val id: String = "todo-kanban"
-					override val item: js.Array[JKanbanItem] = js.Array(new JKanbanItem {
-						override val id: String = "kek"
-						override val title: UndefOr[String] = "whatefuck"
-					})
+					override val item: js.Array[IJKanbanItem] = js.Array()
 				}, new JKanbanColumn {
 					override val title: UndefOr[String] = "In Progress"
 					override val id: String = "inprogress-kanban"
-					override val item: js.Array[JKanbanItem] = js.Array(new JKanbanItem {
-						override val id: String = "kek"
-						override val title: UndefOr[String] = "whatefuck"
-					})
+					override val item: js.Array[IJKanbanItem] = js.Array()
 				}, new JKanbanColumn {
 					override val title: UndefOr[String] = "Closed"
 					override val id: String = "closed-kanban"
-					override val item: js.Array[JKanbanItem] = js.Array(new JKanbanItem {
-						override val id: String = "kek"
-						override val title: UndefOr[String] = "whatefuck"
-					})
+					override val item: js.Array[IJKanbanItem] = js.Array()
 				}
 			)
 		}
 		val kanban = new JKanban(options)
+		// TODO refactoring
+		val taskTextInput = textarea.render
+		val addTaskBtn =
+			button(
+				"create task",
+				*.onclick := { (event: dom.Event) ⇒
+					kanban.addElement("todo-kanban", new JKanbanItem("newTask", taskTextInput.value))
+					Ajaxer[MainAPI].updatePage(page.cloneToChangeKanban(kanban.toServerData)).call()
+				}
+			).render
+		container.appendChildren(taskTextInput, addTaskBtn)
 	}
 
 }

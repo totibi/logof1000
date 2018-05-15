@@ -6,12 +6,13 @@ import org.mongodb.scala.MongoCollection
 import server.model.ServerDBC
 import shared.cms.message.Message
 import shared.cms.page.Page
+import shared.cms.page.kanban.Kanban
 
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 
 // TODO проблема с mongoid, точнее их нет в классах, приходится работать по titles
-abstract class PageContainer {
+abstract class PageContainer extends WithKanban {
 	def getPages: Seq[Page]
 
 	def addPage(pageToAdd: Page): Unit
@@ -26,10 +27,9 @@ object PageContainerInDB extends PageContainer {
 	import org.bson.codecs.configuration.CodecRegistries.{fromProviders, fromRegistries}
 	import org.mongodb.scala.bson.codecs.DEFAULT_CODEC_REGISTRY
 	import org.mongodb.scala.bson.codecs.Macros._
+	import org.mongodb.scala.model.{Filters, Updates}
 
-	import org.mongodb.scala.model.{Updates, Filters}
-
-	private val pagesRegistry = fromRegistries(fromProviders(classOf[Page], classOf[Message]), DEFAULT_CODEC_REGISTRY)
+	private val pagesRegistry = fromRegistries(fromProviders(classOf[Page], classOf[Message], classOf[Kanban]), DEFAULT_CODEC_REGISTRY)
 
 	val collectionName = "PagesCollection"
 	val pagesCollection: MongoCollection[Page] = ServerDBC.getDB(pagesRegistry).getCollection(collectionName)

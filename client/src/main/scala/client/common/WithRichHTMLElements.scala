@@ -2,14 +2,16 @@ package client.common
 
 import client.cms.view.message.MessageView
 import client.cms.view.page.PageView
+import client.facades.jkanban.{JKanban, JKanbanColumn}
 import org.scalajs.dom.raw.HTMLElement
 import org.scalajs.dom.{Element, Node}
 import shared.cms.message.Message
 import shared.cms.page.Page
+import shared.cms.page.kanban.{Kanban, KanbanColumn, KanbanItem}
 
 trait WithRichHTMLElements
 //	extends WithRichElementForPage with WithRichElementForMessage  TODO Upickle broken
- {
+{
 
 	// TODO val for ApiForPage using
 	// TODO look for decorator which allow using all methods like fluent api (returning initial element for next api invokes) (look TODO fluent decorator)
@@ -69,6 +71,26 @@ trait WithRichHTMLElements
 			// TODO i dont like this one (kick page with message for back update cake)
 			page.messages foreach (message ⇒ currentElem.appendMessage(page, message))
 			currentElem
+		}
+
+	}
+
+	// TODO remove this layer? Jkanban - kanban you have upickle but jkanban is view
+	// for transfer client Kanban data to server
+	implicit class RichClientKanban(clientKanban: JKanban) {
+
+		def toServerData: Kanban = {
+			Kanban(columnsToServerColumns())
+		}
+
+		private def columnsToServerColumns(): Seq[KanbanColumn] = {
+			clientKanban.options.boards.map(jColumn ⇒ {
+				KanbanColumn(jColumn.title.getOrElse("undefined"), itemsToServerItems(jColumn))
+			})
+		}
+
+		private def itemsToServerItems(jColumn: JKanbanColumn): Seq[KanbanItem] = {
+			jColumn.item.map(jItem ⇒ KanbanItem(jItem.title.getOrElse("undefined"))).asInstanceOf[Seq[KanbanItem]]
 		}
 
 	}
