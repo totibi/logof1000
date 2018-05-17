@@ -1,6 +1,10 @@
 package client.cms.view.graph
-import org.scalajs.dom.raw.HTMLElement
+import org.scalajs.dom
+import org.scalajs.dom.raw.{HTMLElement, HTMLInputElement}
 import scalatags.JsDom.short._
+
+import scala.scalajs.js
+import scala.scalajs.js.annotation.JSExportTopLevel
 
 object GraphView {
 	def renderGraph(container: HTMLElement): Unit = {
@@ -64,12 +68,12 @@ object GraphView {
 					|          addNode: function (data, callback) {
 					|            // filling in the popup DOM elements
 					|            document.getElementById('node-operation').innerHTML = "Add Node";
-					|            editNode(data, clearNodePopUp, callback);
+					|            editNode(data, callback);
 					|          },
 					|          editNode: function (data, callback) {
 					|            // filling in the popup DOM elements
 					|            document.getElementById('node-operation').innerHTML = "Edit Node";
-					|            editNode(data, cancelNodeEdit, callback);
+					|            editNode(data, callback);
 					|          },
 					|          addEdge: function (data, callback) {
 					|            if (data.from == data.to) {
@@ -94,60 +98,64 @@ object GraphView {
 					|    // initialize your network!
 					|    var network = new vis.Network(container, data, options);
 					|
-					|    function editNode(data, cancelAction, callback) {
-					|      document.getElementById('node-label').value = data.label;
-					|      document.getElementById('node-saveButton').onclick = saveNodeData.bind(this, data, callback);
-					|      document.getElementById('node-cancelButton').onclick = cancelAction.bind(this, callback);
-					|      document.getElementById('node-popUp').style.display = 'block';
-					|    }
-					|
- 					|    // Callback passed as parameter is ignored
-					|    function clearNodePopUp() {
-					|      document.getElementById('node-saveButton').onclick = null;
-					|      document.getElementById('node-cancelButton').onclick = null;
-					|      document.getElementById('node-popUp').style.display = 'none';
-					|    }
-					|
- 					|    function cancelNodeEdit(callback) {
-					|      clearNodePopUp();
-					|      callback(null);
-					|    }
-					|
- 					|    function saveNodeData(data, callback) {
-					|      data.label = document.getElementById('node-label').value;
-					|      clearNodePopUp();
-					|      callback(data);
-					|    }
-					|        function editEdgeWithoutDrag(data, callback) {
-					|      // filling in the popup DOM elements
-					|      document.getElementById('edge-label').value = data.label;
-					|      document.getElementById('edge-saveButton').onclick = saveEdgeData.bind(this, data, callback);
-					|      document.getElementById('edge-cancelButton').onclick = cancelEdgeEdit.bind(this,callback);
-					|      document.getElementById('edge-popUp').style.display = 'block';
-					|    }
-					|
- 					|    function clearEdgePopUp() {
-					|      document.getElementById('edge-saveButton').onclick = null;
-					|      document.getElementById('edge-cancelButton').onclick = null;
-					|      document.getElementById('edge-popUp').style.display = 'none';
-					|    }
-					|
- 					|    function cancelEdgeEdit(callback) {
-					|      clearEdgePopUp();
-					|      callback(null);
-					|    }
-					|
- 					|    function saveEdgeData(data, callback) {
-					|      if (typeof data.to === 'object')
-					|        data.to = data.to.id
-					|      if (typeof data.from === 'object')
-					|        data.from = data.from.id
-					|      data.label = document.getElementById('edge-label').value;
-					|      clearEdgePopUp();
-					|      callback(data);
-					|    }
 				""".stripMargin
 			).render
 		)
 	}
+
+	@JSExportTopLevel("editNode")
+	def editNode(data: js.Dynamic, callback: js.Function1[js.Dynamic, _]) {
+		dom.document.getElementById("node-label").asInstanceOf[HTMLInputElement].value = data.label.toString
+		dom.document.getElementById("node-saveButton").asInstanceOf[HTMLElement].onclick ={ (event: dom.Event) ⇒ saveNodeData(data, callback);}
+		dom.document.getElementById("node-cancelButton").asInstanceOf[HTMLElement].onclick = { (event: dom.Event) ⇒ cancelNodeEdit(callback);}
+		dom.document.getElementById("node-popUp").asInstanceOf[HTMLElement].style.display = "block"
+	}
+
+	// Callback passed as parameter is ignored
+	def clearNodePopUp() {
+		dom.document.getElementById("node-saveButton").asInstanceOf[HTMLElement].onclick = null
+		dom.document.getElementById("node-cancelButton").asInstanceOf[HTMLElement].onclick = null
+		dom.document.getElementById("node-popUp").asInstanceOf[HTMLElement].style.display = "none"
+	}
+
+	def cancelNodeEdit(callback: js.Function1[js.Dynamic, _]) {
+		clearNodePopUp()
+		callback(null)
+	}
+
+	def saveNodeData(data: js.Dynamic, callback: js.Function1[js.Dynamic, _]) {
+		data.label = dom.document.getElementById("node-label").asInstanceOf[HTMLInputElement].value
+		clearNodePopUp()
+		callback(data)
+	}
+
+	@JSExportTopLevel("editEdgeWithoutDrag")
+	def editEdgeWithoutDrag(data: js.Dynamic, callback: js.Function1[js.Dynamic, _]) {
+		// filling in the popup DOM elements
+		dom.document.getElementById("edge-label").asInstanceOf[HTMLInputElement].value = data.label.toString
+		dom.document.getElementById("edge-saveButton").asInstanceOf[HTMLElement].onclick = { (event: dom.Event) ⇒ saveEdgeData(data, callback);}
+		dom.document.getElementById("edge-cancelButton").asInstanceOf[HTMLElement].onclick = { (event: dom.Event) ⇒ cancelEdgeEdit(callback);}
+		dom.document.getElementById("edge-popUp").asInstanceOf[HTMLElement].style.display = "block";
+	}
+
+	def cancelEdgeEdit(callback: js.Function1[js.Dynamic, _]): Unit = {
+		clearEdgePopUp()
+		callback(null)
+	}
+
+	def clearEdgePopUp(): Unit = {
+		dom.document.getElementById("edge-saveButton").asInstanceOf[HTMLElement].onclick = null
+		dom.document.getElementById("edge-cancelButton").asInstanceOf[HTMLElement].onclick = null
+		dom.document.getElementById("edge-popUp").asInstanceOf[HTMLElement].style.display = "none"
+	}
+
+	def saveEdgeData(data: js.Dynamic, callback: js.Function1[js.Dynamic, _]) = {
+		if (data.to.isInstanceOf[js.Object]) data.to = data.to.id
+		if (data.from.isInstanceOf[js.Object]) data.from = data.from.id
+		data.label = dom.document.getElementById("edge-label").asInstanceOf[HTMLInputElement].value
+		clearEdgePopUp()
+		callback(data)
+	}
+
+
 }

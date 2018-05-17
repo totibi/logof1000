@@ -19,6 +19,7 @@ object MainSkeleton {
 				link(rel := "stylesheet", href := "/assets/jkanban/jkanban.min.css"),
 				link(rel := "stylesheet", href := "/assets/vis/vis.min.css"),
 				link(rel := "stylesheet", href := "/assets/vis/popup.css"),
+				link(rel := "stylesheet", href := "/assets/vis/vis-network.min.css"),
 				link(rel := "stylesheet", href := "/assets/logMain.css")
 			),
 			body(onload := onLoadScript)
