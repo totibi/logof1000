@@ -2,6 +2,7 @@ package client.cms.view
 
 import autowire._
 import client.Ajaxer
+import client.cms.view.graph.GraphView
 import client.cms.view.page.PageView
 import org.scalajs.dom
 import org.scalajs.dom.html.{LI, UList}
@@ -25,8 +26,8 @@ object MainView {
 	}
 
 	// block with content of the page
-	val contentContainer: HTMLElement = {
-		val contentContainer: HTMLElement = div(*.`class` := "contentContainer").render
+	val contentContainer = {
+		val contentContainer = div(*.id := "contentContainer", *.`class` := "contentContainer").render
 		contentContainer
 	}
 
@@ -45,11 +46,19 @@ object MainView {
 					}
 				}
 			).render
+		val graphButton =
+			button(
+				"graph",
+				*.onclick := { (event: dom.Event) ⇒
+					GraphView.renderGraph(contentContainer)
+				}
+			).render
 		container.appendChildren(
 			pageTitleInput,
 			br.render,
 			addPageButton,
-			pagesList
+			pagesList,
+			graphButton
 		)
 
 		// render list of pages
