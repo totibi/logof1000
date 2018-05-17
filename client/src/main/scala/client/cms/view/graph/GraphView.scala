@@ -64,6 +64,10 @@ object GraphView {
 					|        edges: edges
 					|    };
 					|      var options = {
+					|      interaction: {
+					|          navigationButtons: true,
+					|          keyboard: true
+					|        },
 					|          manipulation: {
 					|          addNode: function (data, callback) {
 					|            // filling in the popup DOM elements
@@ -135,7 +139,7 @@ object GraphView {
 		dom.document.getElementById("edge-label").asInstanceOf[HTMLInputElement].value = data.label.toString
 		dom.document.getElementById("edge-saveButton").asInstanceOf[HTMLElement].onclick = { (event: dom.Event) ⇒ saveEdgeData(data, callback);}
 		dom.document.getElementById("edge-cancelButton").asInstanceOf[HTMLElement].onclick = { (event: dom.Event) ⇒ cancelEdgeEdit(callback);}
-		dom.document.getElementById("edge-popUp").asInstanceOf[HTMLElement].style.display = "block";
+		dom.document.getElementById("edge-popUp").asInstanceOf[HTMLElement].style.display = "block"
 	}
 
 	def cancelEdgeEdit(callback: js.Function1[js.Dynamic, _]): Unit = {
