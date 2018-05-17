@@ -65,7 +65,7 @@ object MainView {
 
 		private def getPagesListElement(page: Page): LI = {
 			li(
-				*.id := PageView.getPageMenuBtnClass(page),
+				*.id := PageView.getPageMenuItemId(page),
 				button(
 					page.title,
 					*.`class` := PageView.getPageMenuBtnClass(page),
