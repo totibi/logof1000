@@ -50,7 +50,25 @@ object MainView {
 			button(
 				"graph",
 				*.onclick := { (event: dom.Event) ⇒
-					GraphView.renderGraph(contentContainer)
+					Ajaxer[MainAPI].getLastGraph().call.map(graph ⇒ {
+						if (graph.nonEmpty) {
+							val nodesStr = graph.get.nodes.map(node ⇒ {
+								s"{id: '${node.id}', label: '${node.label}'}"
+							}).mkString(", ")
+							val edgesStr = graph.get.edges.map(node ⇒ {
+								s"{id: '${node.id}', label: '${node.label}', from: '${node.fromId}', to: '${node.toId}'}"
+							}).mkString(", ")
+							println(nodesStr)
+							GraphView.renderGraph(contentContainer, nodesStr, edgesStr)
+						}
+					})
+				}
+			).render
+		val saveGraphButton =
+			button(
+				"saveGraph",
+				*.onclick := { (event: dom.Event) ⇒
+					GraphView.saveGraph()
 				}
 			).render
 		container.appendChildren(
@@ -58,7 +76,8 @@ object MainView {
 			br.render,
 			addPageButton,
 			pagesList,
-			graphButton
+			graphButton,
+			saveGraphButton
 		)
 
 		// render list of pages

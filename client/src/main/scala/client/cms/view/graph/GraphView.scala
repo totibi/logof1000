@@ -1,13 +1,17 @@
 package client.cms.view.graph
+import autowire._
+import client.Ajaxer
 import org.scalajs.dom
 import org.scalajs.dom.raw.{HTMLElement, HTMLInputElement}
 import scalatags.JsDom.short._
+import shared.MainAPI
+import shared.cms.Graph.{Edge, Graph, Node}
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSExportTopLevel
 
 object GraphView {
-	def renderGraph(container: HTMLElement): Unit = {
+	def renderGraph(container: HTMLElement, nodes: String, edges: String): Unit = {
 		container.clearFromChildren()
 		val popupContents = div().render
 		popupContents.innerHTML =
@@ -41,21 +45,10 @@ object GraphView {
 			script(
 				s"""
 					|   // create an array with nodes
-					|    var nodes = new vis.DataSet([
-					|        {id: 1, label: 'Node 1'},
-					|        {id: 2, label: 'Node 2'},
-					|        {id: 3, label: 'Node 3'},
-					|        {id: 4, label: 'Node 4'},
-					|        {id: 5, label: 'Node 5'}
-					|    ]);
+					|    var nodes = new vis.DataSet([$nodes]);
 					|
 					|    // create an array with edges
-					|    var edges = new vis.DataSet([
-					|        {from: 1, to: 3},
-					|        {from: 1, to: 2},
-					|        {from: 2, to: 4},
-					|        {from: 2, to: 5}
-					|    ]);
+					|    var edges = new vis.DataSet([$edges]);
 					|    // create a network
 					|    var container = document.getElementById('${container.id}');
 					|    // provide the data in the vis format
@@ -161,5 +154,42 @@ object GraphView {
 		callback(data)
 	}
 
+	def saveGraph() = {
+		var nodesToSave: Seq[Node] = Nil
+		js.Dynamic.global.nodes.forEach((node: js.Dynamic) ⇒ {
+			nodesToSave = nodesToSave :+ Node(node.id.toString, label = node.label.toString)
+			println(node.id, node.label)
+		})
+		var edgesToSave: Seq[Edge] = Nil
+		js.Dynamic.global.edges.forEach((edge: js.Dynamic) ⇒ {
+			edgesToSave = edgesToSave :+ Edge(fromId = edge.from.toString, toId = edge.to.toString, label = edge.label.toString, id = edge.id.toString)
+			println(edge.id, edge.fromId, edge.toId)
+		})
+		println(edgesToSave)
+		Ajaxer[MainAPI].saveGraph(Graph("default", nodesToSave, edgesToSave)).call
+	}
+
+//	def restoreNodes(): String = {
+////		val nodes = js.Array[js.Dynamic]()
+////		Ajaxer[MainAPI].getLastGraph().call.foreach(graph ⇒ {
+////			if (graph.nonEmpty) {
+////				graph.get.nodes.foreach(node ⇒ {
+////					nodes.append(js.Dynamic.literal(label = node.label, id = node.id))
+////				})
+////			}
+////		})
+////		nodes
+//		var str = ""
+//
+//		Ajaxer[MainAPI].getLastGraph().call.map(graph ⇒ {
+//			if (graph.nonEmpty) {
+//				val wtf = graph.get.nodes.map(node ⇒ {
+//					s"{id = '${node.id}', label = '${node.label}'}"
+//				}).mkString(", ")
+//				println(wtf)
+//				wtf
+//			}
+//		})
+//	}
 
 }
